@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package api.freshkeep.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/freshkeep/backend/api/freshkeep/v1;v1";
+
+// Statistics service definition
+service StatisticsService {
+  // GetOverview gets statistics overview
+  rpc GetOverview (GetOverviewRequest) returns (GetOverviewReply) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/overview"
+    };
+  }
+
+  // GetExpiringItems gets items that are expiring soon
+  rpc GetExpiringItems (GetExpiringItemsRequest) returns (GetExpiringItemsReply) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/expiring"
+    };
+  }
+
+  // GetTrend gets expiration trend data
+  rpc GetTrend (GetTrendRequest) returns (GetTrendReply) {
+    option (google.api.http) = {
+      get: "/api/v1/statistics/trend"
+    };
+  }
+}
+
+message GetOverviewRequest {
+  int32 days = 1; // 30, 90, or 0 for all
+}
+
+message GetOverviewReply {
+  int32 fresh_count = 1;
+  int32 expiring_soon_count = 2;
+  int32 expired_count = 3;
+  int32 new_items_count = 4;
+}
+
+message GetExpiringItemsRequest {
+  int32 days = 1; // Days to look ahead
+}
+
+message GetExpiringItemsReply {
+  repeated Item items = 1;
+}
+
+message GetTrendRequest {
+  int32 days = 1; // 30, 90, or 0 for all
+}
+
+message TrendData {
+  string date = 1; // YYYY-MM-DD
+  int32 fresh_count = 2;
+  int32 expiring_count = 3;
+  int32 expired_count = 4;
+}
+
+message GetTrendReply {
+  repeated TrendData data = 1;
+}
+
+// Reuse Item from item.proto
+message Item {
+  uint64 id = 1;
+  string name = 2;
+  uint64 category_id = 3;
+  string category_name = 4;
+  int64 expiry_date = 5;
+  int32 days_remaining = 6;
+  string status = 7;
+}
+

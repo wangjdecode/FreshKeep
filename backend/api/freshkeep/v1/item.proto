@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package api.freshkeep.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/freshkeep/backend/api/freshkeep/v1;v1";
+
+// Item service definition
+service ItemService {
+  // CreateItem creates a new item
+  rpc CreateItem (CreateItemRequest) returns (CreateItemReply) {
+    option (google.api.http) = {
+      post: "/api/v1/items"
+      body: "*"
+    };
+  }
+
+  // GetItem gets an item by id
+  rpc GetItem (GetItemRequest) returns (GetItemReply) {
+    option (google.api.http) = {
+      get: "/api/v1/items/{id}"
+    };
+  }
+
+  // ListItems lists items with pagination and filters
+  rpc ListItems (ListItemsRequest) returns (ListItemsReply) {
+    option (google.api.http) = {
+      get: "/api/v1/items"
+    };
+  }
+
+  // UpdateItem updates an item
+  rpc UpdateItem (UpdateItemRequest) returns (UpdateItemReply) {
+    option (google.api.http) = {
+      put: "/api/v1/items/{id}"
+      body: "*"
+    };
+  }
+
+  // DeleteItem deletes an item
+  rpc DeleteItem (DeleteItemRequest) returns (DeleteItemReply) {
+    option (google.api.http) = {
+      delete: "/api/v1/items/{id}"
+    };
+  }
+
+  // UploadItemImage uploads an image for an item
+  rpc UploadItemImage (UploadItemImageRequest) returns (UploadItemImageReply) {
+    option (google.api.http) = {
+      post: "/api/v1/items/{id}/image"
+      body: "*"
+    };
+  }
+}
+
+// Item message
+message Item {
+  uint64 id = 1;
+  string name = 2;
+  uint64 category_id = 3;
+  string category_name = 4;
+  int64 expiry_date = 5; // Unix timestamp
+  int64 purchase_date = 6; // Unix timestamp, optional
+  int32 quantity = 7;
+  string image_path = 8;
+  string barcode = 9;
+  string notes = 10;
+  string status = 11; // fresh, expiring_soon, expired
+  int32 days_remaining = 12; // negative if expired
+  int64 created_at = 13;
+  int64 updated_at = 14;
+}
+
+message CreateItemRequest {
+  string name = 1;
+  uint64 category_id = 2;
+  int64 expiry_date = 3;
+  int64 purchase_date = 4;
+  int32 quantity = 5;
+  string image_path = 6;
+  string barcode = 7;
+  string notes = 8;
+  int32 reminder_days_before = 9; // Days before expiry to remind
+}
+
+message CreateItemReply {
+  Item item = 1;
+}
+
+message GetItemRequest {
+  uint64 id = 1;
+}
+
+message GetItemReply {
+  Item item = 1;
+}
+
+message ListItemsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  uint64 category_id = 3;
+  string status = 4; // fresh, expiring_soon, expired
+  string search = 5; // Search by name
+}
+
+message ListItemsReply {
+  repeated Item items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message UpdateItemRequest {
+  uint64 id = 1;
+  string name = 2;
+  uint64 category_id = 3;
+  int64 expiry_date = 4;
+  int64 purchase_date = 5;
+  int32 quantity = 6;
+  string image_path = 7;
+  string barcode = 8;
+  string notes = 9;
+  int32 reminder_days_before = 10;
+}
+
+message UpdateItemReply {
+  Item item = 1;
+}
+
+message DeleteItemRequest {
+  uint64 id = 1;
+}
+
+message DeleteItemReply {
+  bool success = 1;
+}
+
+message UploadItemImageRequest {
+  uint64 id = 1;
+  bytes image_data = 2; // Base64 encoded image
+  string content_type = 3;
+}
+
+message UploadItemImageReply {
+  string image_path = 1;
+  string image_url = 2;
+}
+

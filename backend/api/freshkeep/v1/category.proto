@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package api.freshkeep.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/freshkeep/backend/api/freshkeep/v1;v1";
+
+// Category service definition
+service CategoryService {
+  // ListCategories lists all categories
+  rpc ListCategories (ListCategoriesRequest) returns (ListCategoriesReply) {
+    option (google.api.http) = {
+      get: "/api/v1/categories"
+    };
+  }
+
+  // CreateCategory creates a new category
+  rpc CreateCategory (CreateCategoryRequest) returns (CreateCategoryReply) {
+    option (google.api.http) = {
+      post: "/api/v1/categories"
+      body: "*"
+    };
+  }
+
+  // UpdateCategory updates a category
+  rpc UpdateCategory (UpdateCategoryRequest) returns (UpdateCategoryReply) {
+    option (google.api.http) = {
+      put: "/api/v1/categories/{id}"
+      body: "*"
+    };
+  }
+
+  // DeleteCategory deletes a category
+  rpc DeleteCategory (DeleteCategoryRequest) returns (DeleteCategoryReply) {
+    option (google.api.http) = {
+      delete: "/api/v1/categories/{id}"
+    };
+  }
+}
+
+// Category message
+message Category {
+  uint64 id = 1;
+  string name = 2;
+  string icon = 3;
+  string color = 4;
+  int64 item_count = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+}
+
+message ListCategoriesRequest {
+}
+
+message ListCategoriesReply {
+  repeated Category categories = 1;
+}
+
+message CreateCategoryRequest {
+  string name = 1;
+  string icon = 2;
+  string color = 3;
+}
+
+message CreateCategoryReply {
+  Category category = 1;
+}
+
+message UpdateCategoryRequest {
+  uint64 id = 1;
+  string name = 2;
+  string icon = 3;
+  string color = 4;
+}
+
+message UpdateCategoryReply {
+  Category category = 1;
+}
+
+message DeleteCategoryRequest {
+  uint64 id = 1;
+}
+
+message DeleteCategoryReply {
+  bool success = 1;
+}
+
